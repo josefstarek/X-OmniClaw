@@ -464,7 +464,7 @@ releases/X-OmniClaw-v<version>-debug.apk
 <a id="acknowledgments"></a>
 ## 🙏 致谢
 
-**[HermesApp](https://github.com/SelectXn00b/HermesApp/tree/main-backup-20260424)**：本项目**受到 HermesApp 的启发**。感谢 HermesApp 维护者与社区。
+**[HermesApp](https://github.com/SelectXn00b/HermesApp/tree/main-backup-20260424)**：本项目受到 HermesApp 的启发。感谢 HermesApp 维护者与社区。
 
 ---
 
