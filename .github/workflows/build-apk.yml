@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Vyřeší varování ohledně Node.js verze
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -20,16 +20,27 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Kontrola a vygenerování Gradle Wrapperu
+      - name: Najít a spustit gradlew
         run: |
-          if [ ! -f "./gradlew" ]; then
-            echo "gradlew nenalezen, generuji nový..."
-            gradle wrapper
+          echo "Hledám soubor gradlew..."
+          GRADLEW_PATH=$(find . -name "gradlew" | head -n 1)
+          
+          if [ -z "$GRADLEW_PATH" ]; then
+            echo "Chyba: gradlew v projektu vůbec neexistuje!"
+            exit 1
           fi
+          
+          echo "Našel jsem gradlew v: $GRADLEW_PATH"
+          WORK_DIR=$(dirname "$GRADLEW_PATH")
+          
+          echo "Přesouvám se do: $WORK_DIR"
+          cd "$WORK_DIR"
+          
+          echo "Povoluji spuštění..."
           chmod +x ./gradlew
-
-      - name: Sestavení Debug APK
-        run: ./gradlew assembleDebug
+          
+          echo "Spouštím kompilaci..."
+          ./gradlew assembleDebug
 
       - name: Nahrání hotového APK k dispozici ke stažení
         uses: actions/upload-artifact@v4
