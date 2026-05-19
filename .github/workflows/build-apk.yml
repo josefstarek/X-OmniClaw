@@ -1,7 +1,10 @@
 name: Build Android APK
 
 on:
-  workflow_dispatch: # Umožní spustit build ručně tlačítkem
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Vyřeší varování ohledně Node.js verze
 
 jobs:
   build:
@@ -17,11 +20,13 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Nastavení Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Udělení práv pro spuštění gradlew
-        run: chmod +x ./gradlew
+      - name: Kontrola a vygenerování Gradle Wrapperu
+        run: |
+          if [ ! -f "./gradlew" ]; then
+            echo "gradlew nenalezen, generuji nový..."
+            gradle wrapper
+          fi
+          chmod +x ./gradlew
 
       - name: Sestavení Debug APK
         run: ./gradlew assembleDebug
@@ -30,4 +35,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: |
+            **/build/outputs/apk/debug/*.apk
