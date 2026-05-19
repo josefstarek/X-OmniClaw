@@ -20,27 +20,16 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Najít a spustit gradlew
+      - name: Oprava Windows konců řádků (CRLF na LF)
         run: |
-          echo "Hledám soubor gradlew..."
-          GRADLEW_PATH=$(find . -name "gradlew" | head -n 1)
-          
-          if [ -z "$GRADLEW_PATH" ]; then
-            echo "Chyba: gradlew v projektu vůbec neexistuje!"
-            exit 1
-          fi
-          
-          echo "Našel jsem gradlew v: $GRADLEW_PATH"
-          WORK_DIR=$(dirname "$GRADLEW_PATH")
-          
-          echo "Přesouvám se do: $WORK_DIR"
-          cd "$WORK_DIR"
-          
-          echo "Povoluji spuštění..."
-          chmod +x ./gradlew
-          
-          echo "Spouštím kompilaci..."
-          ./gradlew assembleDebug
+          echo "Čistím soubory od neviditelných Windows znaků..."
+          find . -name "gradlew" -exec sed -i 's/\r$//' {} \;
+          find . -name "gradlew" -exec chmod +x {} \;
+
+      - name: Sestavení pomocí oficiální Gradle Action
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          arguments: assembleDebug
 
       - name: Nahrání hotového APK k dispozici ke stažení
         uses: actions/upload-artifact@v4
